@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="content-language" content="en-gb">
+
+	<title>parrotlogo</title>
+	<link rel="icon" sizes="16x16 32x32 128x128" type="image/png" href="favicon.png" />
+	<link rel="stylesheet" href="logo.css">
+	<link rel="stylesheet" href="index.css">
+
+	<script src="codemirror.min.js"></script>
+	<script src="runmode.min.js"></script>
+	<script src="closebrackets.min.js"></script>
+	<script src="matchbrackets.min.js"></script>
+	<script src="placeholder.min.js"></script>
+	<link rel="stylesheet" href="codemirror.css">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,700;1,300&display=swap"
+		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+		rel="stylesheet">
+
+	<script src="cm-logo.js"></script>
+	<script src="https://kit.fontawesome.com/110444e404.js" crossorigin="anonymous"></script>
+
+
+</head>
+
+<body>
+
+
+
+	<div id="canvas_container">
+		
+			<div id="display">
+				
+				<h1>🦜parrot<i>logo</i></h1>
+					<canvas id="sandbox" width="500" height="400">
+						
+					</canvas>
+					<canvas id="turtle" width="500" height="400"></canvas>
+					<div id="overlay" style="font-size: 13px; font-family: monospace; color: black;"></div>
+					<div id="error"></div>
+				
+			</div>
+		
+	</div>
+
+	<div class="container">
+		<div id="help">			
+			<div id="hidehelp" title="show/hide help" class="fab subtle"><i class="fa fa-chevron-right"></i></div>
+			<h2>Useful logo words</h2>
+			<ul>
+				<li><abbr title="forwards, like &quot;fd 10&quot;">fd</abbr>,
+					<abbr title="backwards, like &quot;bk 10&quot;">bk</abbr>,
+					<abbr title="right turn, like &quot;rt 90&quot;">rt</abbr>,
+					<abbr title="left turn, like &quot;lt 90&quot;">lt</abbr>
+				</li>
+				<li><abbr title="pen up, lets you move the turtle without drawing a line">pu</abbr>,
+					<abbr title="pen down">pd</abbr>,
+					<abbr title="set pen colour, like &quot;setpc 'blue&quot;">setpc</abbr>
+				</li>
+				<li><abbr title="bring the turtle back to the middle">home</abbr>, 
+					<abbr title="clear the screen">clean</abbr></li>
+				<li><abbr title="repeat everything inside [...] 5 times ">rpt 5 [ fd 10 rt 10 ]</abbr></li>
+				<li><abbr title="make a new procedure that you can call later">to PROCEDURE ... end</abbr></li>
+			</ul>
+			<h2>My procedures</h2>
+			<div id="myprocs">
+			<ul>
+			</ul>
+			<div class="smbutton" id="newproc"><i class="fa fa-plus"></i> new procedure</div>
+			</div>
+			<section id="options">
+				<h2>Options</h2><label><input type="checkbox" id="turbo">Turbo mode!</input></label>
+			</section>
+			<section class="about">
+				<h2>About</h2>
+				<p><b>parrot</b><i>logo</i> is made by Tom and Annie Sillence using: 
+					<a href="https://github.com/inexorabletash/jslogo" target="_blank">jslogo</a>
+					<a href="https://codemirror.net/" target="_blank">codemirror</a>
+					<a href="https://fontawesome.com" target="_blank">fontawesome</a>
+					<a href="https://fonts.google.com/" target="_blank"> google fonts</a>
+				</p>
+				<p>This web page does not use cookies or collect any information about you.</p>
+			</section>
+
+		</div>
+
+		<div id="input-container">
+			<div id="input-panel" class="panel">
+				<div id="togglecode" title="show/hide help" class="fab subtle "><i class="fa fa-chevron-up"></i></div>
+				
+				<div id="run" class="fab">
+					<div data-l10n-id="ip-button-run" class="label" title="Run All [ctrl-Enter]"><i
+							class="fa fa-play"></i></div>
+				</div>
+				<div id="stop" class="fab">
+					<div data-l10n-id="ip-button-stop" class="label" title="Stop"><i class="fa fa-stop"></i></div>
+				</div>
+				<div id="clear" class="fab">
+					<div data-l10n-id="ip-button-clear" class="label" title="Clean up screen"><i class="fa fa-snowplow"></i></div>
+				</div>
+				<div id="input">
+					<div class="inner">
+
+
+						<textarea placeholder="Type your code here..." data-l10n-id="logo-ta-multi-line"
+							id="logo-ta-multi-line"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+
+	<script src="floodfill.js"></script>
+	<script src="logo.js"></script>
+	<script src="turtle.js"></script>
+	<script src="index.js"></script>
+
+</body>
+
+</html>

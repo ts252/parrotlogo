@@ -1,0 +1,368 @@
+code { font-family: monospace; }
+
+abbr {
+  text-decoration: none;
+  cursor: pointer;  
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 2px;
+}
+
+abbr:hover {
+  border-color: silver;
+}
+
+#options label {
+  margin: 1em;
+  cursor: pointer;
+}
+
+#options h2 {
+  margin-bottom: 5px;
+}
+
+h1 {  
+  z-index: 4;
+  position: absolute;
+  margin: 0;
+  font-weight: 700;
+}
+
+#input-container {
+  flex-grow: 2;
+  position: relative;
+  pointer-events: none;
+  margin-right: 3px;
+}
+
+#input-panel {
+  pointer-events: all;
+  z-index: 3;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 165px;
+  transition: height 0.2s ease-out;
+}
+
+/* Graphical and Textual Display */
+
+#display{  
+  overflow: hidden;
+  background-color: white;  
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+
+#display #error {
+  position: absolute;
+  padding: 3px 20px;
+  bottom: 0;
+  border-radius: 2px;
+  font-size: 14pt;
+  font-weight: bold;
+  color: white;
+  background-color: #e01010;
+  display: none;
+  z-index: 99;
+  left: 0; right: auto;
+}
+
+#display #error.shown {
+  display: block;
+}
+
+#sandbox {
+  position: absolute;
+  z-index: 0;
+}
+
+#turtle {
+  position: absolute; z-index: 1;
+}
+
+#overlay {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  position: absolute;
+  z-index: 2;
+  background-color: transparent;
+  overflow: hidden;
+  white-space: pre-wrap;
+  font-family: monospace;
+  pointer-events: none;
+}
+
+/* User Input */
+
+#logo-cm-multi-line,
+#logo-ta-multi-line {
+  position: absolute;
+  overflow: hidden;
+  left: 0; top: 0; right: 0; bottom: 0;
+  font-family: monospace;  
+  display: block;
+}
+
+.CodeMirror .CodeMirror-placeholder { color: gray; font-style: italic; }
+
+#run, #stop {
+  bottom: 10px;
+  right: 80px;
+  bottom: 10px;
+}
+
+#clear {
+  bottom: 10px;
+}
+
+#run { display: block; }
+#stop { display: none; }
+.running #run { display: none; }
+.running #stop { display: block; }
+
+#clear {
+  right: 30px;
+}
+
+.fab {  
+  cursor: pointer;
+  user-select: none;
+  position: absolute;
+  background-color: white;
+  z-index: 8;
+  border-radius: 45px;
+
+  height: 40px;
+  width: 40px;  
+  background: white;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  color: rgb(0 122 219);
+}
+
+.fab.subtle {
+  
+}
+
+div.label {
+  text-align: center;
+  line-height: 42px;
+  vertical-align: middle;
+  font-size: 23px;
+}
+
+div.label i.fa-play {
+  padding-left: 3px;
+
+}
+
+.fab:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 7px rgba(0,0,0,0.6);
+}
+
+#input .CodeMirror {
+  background-color: rgba(0,0,0,0.05);
+}
+
+#input .CodeMirror:focus-within {
+  background-color:  #f1efefe9;
+}
+
+#input .CodeMirror:focus-within .CodeMirror-line>span {
+  background-color: transparent;
+}
+
+#input .CodeMirror-line>span {
+  background-color: #f1efefe9;
+}
+
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
+
+body {
+  font-family: Roboto, sans-serif;
+  margin: 0;
+}
+
+h2 {
+  margin: 0;
+}
+
+#newproc {
+  text-align: left;
+  margin-left: 2em;
+}
+
+#help {
+  width: 230px;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  background: white;
+  box-shadow: -2px -2px 5px #00000033;
+  padding: 10px;
+  z-index: 2;
+  pointer-events: all;
+  transition: width 0.2s ease-out;
+}
+
+#help ul {
+  padding-inline: 1em;
+}
+
+#help #hidehelp {  
+  right: 5px;  
+  top: 5px;
+  border-radius: 30px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  display: block;  
+}
+
+#togglecode {  
+  right: 20px;  
+  top: -15px;
+  border-radius: 30px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  display: block;  
+}
+
+
+h2 {
+  
+  font-weight: normal;
+}
+
+#myprocs {
+  flex-grow: 3;
+  flex-shrink: 3;
+  overflow:auto;
+  user-select: none;
+}
+
+.container {
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  flex-direction: row-reverse;
+  z-index: 4;
+  pointer-events: none;
+}
+
+span.runnable::after {
+  content: "\f04b";
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free";
+  text-decoration: none;
+  color: black;
+  padding: 2px;
+  font-style: normal;
+  font-size: 11px;
+  border-radius: 20px;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  box-shadow: 1px 1px 3px black;
+  margin: 2px 4px;
+  position: absolute;
+}
+
+span.runnable:hover::after {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+
+.smbutton {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 20px;
+  text-align: center;
+  margin-left: 5px;
+  color: rgb(0 122 219);
+  opacity: 0.8;
+}
+
+.smbutton:hover {
+  opacity: 1;
+}
+
+li {
+  list-style: none;
+}
+
+.CodeMirror-code>div {
+  overflow: visible;
+}
+
+.about {
+  color: #444;
+  font-size: 80%;
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;;
+}
+
+.about a {
+  color: rgb(0 122 219);
+  text-decoration: none;       
+}
+
+
+.about p {
+  margin-left: 1em;
+}
+
+
+#help.collapsed {
+  width: 0;
+}
+
+#help>* {
+  width: 200px;
+}
+
+#help.collapsed * {
+  display: none;
+}
+
+#help.collapsed #hidehelp {
+  display: block;  
+}
+
+#help.collapsed #hidehelp i{  
+  display: inline-block; 
+  transform: rotate(180deg);
+}
+
+i.param {
+  color: #007f7f;
+  font-weight: bold;
+}
+
+#input-panel.expanded {
+  height: 50%;
+}
+
+#input-panel.expanded #togglecode i{
+  transform: rotate(180deg);
+}

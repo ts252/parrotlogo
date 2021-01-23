@@ -1,0 +1,52 @@
+to circle :size
+  repeat 90 [fd :size * 3.1415 / 90 rt 4]
+end  
+
+to parrot  
+  setpc 'red
+  pd
+  fd 10 rt 90 fd 60 lt 90 fd 10 lt 45 fd 40
+  rt 45 fd 70 rt 45 fd 20
+  setpc 'yellow
+  lt 135 fd 40 lt 45 fd 10
+  rt 135 fd 30 rt 45 fd 40
+  setpc 'red
+  rt 45 fd 60 rt 45 fd 40
+  rt 45
+  
+  fd 20
+  lt 45 fd 40 rt 45 fd 60
+  setpc 'blue
+  lt 45 fd 70
+  
+  rt 135 fd 10 rt 45 fd 10 lt 135 fd 10 rt 90 fd 10 rt 45 fd 70
+  setpc 'red
+  lt 90 fd 25
+  lt 45 fd 17
+  lt 90 fd 20
+  rt 90 fd 10
+  rt 90 fd 120
+  
+  pu
+  rt 90
+  fd 170
+  rt 90 fd 50
+  setpc 'black
+  pd
+  circle 10  
+end
+
+to welcome 
+  home
+  clean
+  pu
+  fd 30 lt 90 fd 80 rt 90  
+  pd
+  setpensize 4
+  parrot
+  setpensize 1
+  pu 
+  home
+  st
+end
+
