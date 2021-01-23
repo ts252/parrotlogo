@@ -28,6 +28,12 @@ h1 {
   font-weight: 700;
 }
 
+h1 img {
+  width: 1em;
+  height: auto;
+  vertical-align: middle;
+}
+
 #input-container {
   flex-grow: 2;
   position: relative;
@@ -128,6 +134,13 @@ h1 {
 #stop { display: none; }
 .running #run { display: none; }
 .running #stop { display: block; }
+
+.running #clear {
+  color: silver;
+  box-shadow: none;
+  transform: none;
+  cursor: default;
+}
 
 #clear {
   right: 30px;

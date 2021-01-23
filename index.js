@@ -49,14 +49,14 @@ function initInput() {
 
     return v.replace(/(fd|bk)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
-      if(steps > 1){
+      if(steps > -1){
         return `repeat ${steps} [${g1} ${g2/steps} wait 1]`
       } else {
         return substr
       }
     }).replace(/(lt|rt)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
-      if(steps > 1){
+      if(steps > -1){
         return `repeat ${steps} [${g1} ${g2/steps} wait 1]`
       } else {
         return substr
@@ -103,7 +103,7 @@ function initInput() {
   var BRACKETS = '()[]{}';
 
   editor = CodeMirror.fromTextArea($('#logo-ta-multi-line'), {
-    autoCloseBrackets: { pairs: BRACKETS, explode: BRACKETS },
+    autoCloseBrackets: false,
     matchBrackets: true,
     lineComment: ';',
     lineNumbers: false,
@@ -116,7 +116,12 @@ function initInput() {
   editor.on('keydown', function (instance, event) {
     if (keyNameForEvent(event) === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      run();
+      if(document.body.classList.contains("running")) {
+
+        stop();
+      } else {
+        run();
+      }
     }
   });
 
@@ -153,7 +158,7 @@ function initInput() {
   }
 
   $("#newproc").onclick = () => {
-    let re = /(end)\s((?:.(?!end))*$)/si
+    let re = /(end)?((?:.(?!end))*$)/si
     let src = editor.getValue()
     let landc = getLineAndChar(src, src.match(re).index)
     editor.setValue(src.replace(re, ("$1\n\nto MYNEWPROC \n\nend\n\n$2")))
@@ -226,6 +231,8 @@ function initInput() {
   editor.setValue(localStorage.getItem("parrotlogo.currentEditor") || "")
   $("#turbo").checked = JSON.parse(localStorage.getItem("parrotlogo.turbo") || "false");
 
+  turtle.scrunch = 10
+
 }
 
 
@@ -244,8 +251,7 @@ function initInput() {
 
     if (logo && turtle) {
       turtle.resize(w, h);
-      //logo.run('cs');
-    }
+  }
   }
 }());
 
@@ -320,8 +326,10 @@ window.addEventListener('DOMContentLoaded', function () {
   logo = new LogoInterpreter(
     turtle, stream,
     function (name, def) {      
-    });
+    });    
   logo.run('cs');
+
+  turtle.turtleMode = 'window'
 
   initInput();
 

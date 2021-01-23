@@ -3066,6 +3066,26 @@ function LogoInterpreter(turtle, stream, savehook)
       }.bind(this));
   });
 
+  def("rpt", function(count, statements) {
+    count = aexpr(count);
+    statements = reparse(lexpr(statements));
+    var old_repcount = this.repcount;
+    var i = 1;
+    return promiseFinally(
+      promiseLoop(function(loop, resolve, reject) {
+        if (i > count) {
+          resolve();
+          return;
+        }
+        this.repcount = i++;
+        this.execute(statements)
+          .then(promiseYield)
+          .then(loop, reject);
+      }.bind(this)), function() {
+        this.repcount = old_repcount;
+      }.bind(this));
+  });
+
   def("forever", function(statements) {
     statements = reparse(lexpr(statements));
     var old_repcount = this.repcount;
