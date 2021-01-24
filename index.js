@@ -117,7 +117,6 @@ function initInput() {
     if (keyNameForEvent(event) === 'Enter' && event.ctrlKey) {
       event.preventDefault();
       if(document.body.classList.contains("running")) {
-
         stop();
       } else {
         run();
@@ -228,35 +227,33 @@ function initInput() {
   $('#stop').addEventListener('click', () => { stop() });
   $('#clear').addEventListener('click', () => { clear() });
 
-  editor.setValue(localStorage.getItem("parrotlogo.currentEditor") || "")
-  $("#turbo").checked = JSON.parse(localStorage.getItem("parrotlogo.turbo") || "false");
+  if(localStorage.getItem("parrotlogo.currentEditor") === null){
+    fetch("parrot.logo").then(d => d.text()).then(d => {editor.setValue(d)})
+    $("#turbo").checked = false
+    setTimeout(() => {run(procsrc + " welcome")}, 2000)
+  } else {
+    editor.setValue(localStorage.getItem("parrotlogo.currentEditor") || "")
+    $("#turbo").checked = JSON.parse(localStorage.getItem("parrotlogo.turbo") || "false");
+  }
 
-  turtle.scrunch = 10
+  turtle.scrunch = [1, 1]
+  turtle.turtlemode = 'window'
+  resize();
 
 }
 
+function resize() {
+  var box = $('#display'), rect = box.getBoundingClientRect(),
+    w = rect.width, h = rect.height;
+  
+ // $('#overlay').width = w; $('#overlay').height = h;
 
-//
-// Canvas resizing
-//
-(function () {
-  window.addEventListener('resize', resize);
-  window.addEventListener('DOMContentLoaded', resize);
-  function resize() {
-    var box = $('#display'), rect = box.getBoundingClientRect(),
-      w = rect.width, h = rect.height;
-    $('#sandbox').width = w; $('#sandbox').height = h;
-    $('#turtle').width = w; $('#turtle').height = h;
-    $('#overlay').width = w; $('#overlay').height = h;
+  if (logo && turtle) {
+    turtle.resize(w, h);
+}
+}
 
-    if (logo && turtle) {
-      turtle.resize(w, h);
-  }
-  }
-}());
-
-
-
+window.addEventListener('resize', resize);
 
 window.addEventListener('DOMContentLoaded', function () {
 
@@ -329,7 +326,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });    
   logo.run('cs');
 
-  turtle.turtleMode = 'window'
+  
 
   initInput();
 

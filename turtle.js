@@ -100,8 +100,8 @@
       this.penmode = this.penmode;
       this.penwidth = this.penwidth;
 
-      [this.turtle_ctx, this.canvas_ctx].forEach(function(ctx) {
-        ctx.setTransform(this.sx, 0, 0, -this.sy, this.width / 2, this.height / 2);
+      [this.turtle_ctx, this.canvas_ctx].forEach(function(ctx) {        
+        ctx.setTransform(this.sx, 0, 0, -this.sy, this.width / 2, this.height / 2);        
       }.bind(this));
     }},
 
@@ -304,9 +304,14 @@
     // API methods
 
     resize: {value: function(w, h) {
+      let img = this.canvas_ctx.getImageData(0, 0, this.width, this.height);
+      let oldw = this.width, oldh = this.height
       this.width = w;
-      this.height = h;
+      this.height = h;      
+      $('#sandbox').width = w; $('#sandbox').height = h;
+      $('#turtle').width = w; $('#turtle').height = h;
       this._init();
+      this.canvas_ctx.putImageData(img, (w - oldw) / 2, (h - oldh) / 2);
     }},
 
     move: {value: function(distance) {
