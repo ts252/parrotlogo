@@ -25,13 +25,17 @@ pri = _ "(" inner:add _ ")" { return inner }
 val = param:param {return {type:"param", name:param}}
 	/ num
 
-num = _ sign? _ integer decimal? { return parseFloat(text().replace(/\s*/g, "")); }
+num = _ sign? _ integer decimal? { return parseFloat(text().replace(/\s*/g, "")) }
 
 sign = "-"
 
 integer = [0-9]+
 
 decimal = "." [0-9]+ 
+
+comment = _";" commentchar* _ {return {type: "comment"}}
+
+commentchar = !"\n".
 
 _ "whitespace"
   = [ \t\n\r]* { return text() ? " " : "" }
@@ -43,6 +47,7 @@ tlblock = proc
 
 block = ctrl:ctrl _ {return ctrl}
 	/stmt:stmt {return stmt}
+	/comment
     
 ctrl = if
 	/rpt

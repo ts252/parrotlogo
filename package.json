@@ -1,0 +1,16 @@
+{
+  "name": "parrotlogo",
+  "version": "1.0.0",
+  "description": "Fast simple logo with lots of room to breathe",
+  "main": "index.html",
+  "repository": "https://github.com/ts252/parrotlogo.git",
+  "author": "Tom and Annie Sillence",
+  "license": "Apache-2.0",
+  "private": false,
+  "devDependencies": {
+    "pegjs": "^0.10.0"
+  },
+  "scripts": {
+    "build": "yarn run pegjs --export-var pegparser --format globals -o parser.js pl.logo.pegjs"
+  }
+}

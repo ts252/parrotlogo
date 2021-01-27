@@ -364,6 +364,10 @@ const gen = {
     }
   },
 
+  comment: (proc, state) => {
+    return ""
+  },
+
   fndecl: (proc, state) => {
     let rv = `procs["${proc.name}"] = (${proc.params.map(x => "__" + x).join(", ")}) => {`
     for(let b of proc.children){
@@ -428,7 +432,7 @@ function codegen(parsetree){
   
   let output = []
   for(let n of parsetree){
-    output += gen[n.type](n, state)
+    output += gen.any(n, state)
   }
 
   console.debug(output)
