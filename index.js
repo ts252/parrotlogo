@@ -328,6 +328,96 @@ window.addEventListener('DOMContentLoaded', function () {
 
 });
 
+function hoist(parsetree, state){
+  for(let b of parsetree){
+    if(b.type == "fndecl"){
+      state.procs[b.name] ={
+        name: b.name,
+        arity: b.params.length
+      }
+    }
+  }
+
+  function checkcall(n){
+    if(n.type == "usercall"){
+      if(!(n.name in state.procs)){
+        throw `Unknown procedure "${n.name}"`
+      }
+      if(state.procs[n.name].arity != n.params.length){
+        throw `"${n.name}" takes ${state.procs[n.name].arity} parameters, but ${n.params.length} were supplied`
+      }
+    }
+  }
+
+  for(let n of parsetree){
+    checkcall(n)
+  }
+}
+
+const gen = {
+  any: (node, state) => {
+    if(node.type){
+      return gen[node.type](node, state)
+    } else {
+      //primitive
+      return JSON.stringify(node)
+    }
+  },
+
+  fndecl: (proc, state) => {
+    let rv = `procs["${proc.name}"] = (${proc.params.map(x => "__" + x).join(", ")}) => {`
+    for(let b of proc.children){
+      rv += gen.any(b, state)      
+    }
+    rv += "}\n";
+
+    return rv
+  },
+
+  param: (param, state) => {
+    return "__" + param.name
+  },
+
+  call: (call, state) => {
+    if("param" in call){
+      return `draw({op: "${call.fn}", param:${gen.any(call.param, state)}});\n`      
+    } else {
+      return `draw({op: "${call.fn}"});\n`
+    }
+  },
+
+  usercall: (call, state) => {
+    return `procs["${call.name}"](${call.params.map(x => gen.any(x, state)).join(", ")});\n`
+  },
+
+  if: (ifexpr, state) => {
+    let rv = `if(${gen.any(ifexpr.expr)}){\n`
+    for(let b of ifexpr.ifchildren){
+      rv += gen.any(b, state)      
+    }
+    rv += "}"
+    if(ifexpr.elsechildren && ifexpr.elsechildren.length){
+      rv += "else {"
+    }
+    for(let b of ifexpr.elsechildren){
+      rv += gen.any(b, state)      
+    }
+    rv += "}"
+    return rv
+  },
+
+  rpt: (rpt, state) => {
+    let rv = `for(let __loop = 0; __loop < (${gen.any(rpt.expr)}); __loop++){\n`
+    for(let b of rpt.children){
+      rv += gen.any(b, state)      
+    }
+    return rv + "}\n"
+  },
+
+  op: (op, state) => {
+    return ` (${gen.any(op.l, state)}) ${op.op} (${gen.any(op.r, state)}) `
+  }
+}
 
 function codegen(parsetree){
   let state = {
@@ -345,12 +435,26 @@ function codegen(parsetree){
   let w = new Worker("parrotengine.js")
   w.onmessage = (msg) => {
     for(let op of msg.data){
-      parrotlogo[op.op](...op.params)
+      parrotlogo[op.op](op.param)
     }
   }
-  w.postMessage({code: output, canvas: $("#sandbox")})
+  w.postMessage({code: output})
 
 }
+const PALETTE = {
+  0: "black", 1: "blue", 2: "lime", 3: "cyan",
+  4: "red", 5: "magenta", 6: "yellow", 7: "white",
+  8: "brown", 9: "tan", 10: "green", 11: "aquamarine",
+  12: "salmon", 13: "purple", 14: "orange", 15: "gray"
+};
+
+function parseColor(color) {
+  if(color in PALETTE){
+    return PALETTE[color]
+  }
+  return color;
+}
+
 const parrotlogo = {
   fd: (v) => {turtle.move(v)},
   bk: (v) => {turtle.move(-v)},

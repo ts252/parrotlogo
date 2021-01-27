@@ -47,4 +47,5 @@ onmessage = function(e){
     eval(e.data.code)    
     postMessage(drawbuf)
     drawbuf = []
+    close()
 }

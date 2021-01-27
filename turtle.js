@@ -167,7 +167,30 @@
       }
     }},
 
-    _moveto: {value: function(x, y, setpos) {
+    _moveto: {value: function(x, y) {
+
+      if(this.pathSteps == 10000){
+        this.canvas_ctx.stroke();
+        this.pathSteps = 0;
+      }
+      
+      if(!this.pathSteps){
+        this.canvas_ctx.beginPath();
+        this.pathSteps = 0;
+      }
+
+      this.pathSteps++;
+      if(this.pendown){
+        this.canvas_ctx.lineTo(x, y)
+      } else {
+        this.canvas_ctx.moveTo(x, y)
+      }
+          this.x = this.px = x;
+          this.y = this.py = y;
+      
+    }},
+
+    _old_moveto: {value: function(x, y, setpos) {
 
       var _go = function(x1, y1, x2, y2) {
         if (this.filling) {
@@ -375,7 +398,7 @@
       this.r = deg2rad(90);
     }},
 
-    drawtext: {value: function(text) {
+    /*drawtext: {value: function(text) {
       this.canvas_ctx.save();
       this.canvas_ctx.translate(this.x, this.y);
       this.canvas_ctx.scale(1, -1);
@@ -472,7 +495,7 @@
       this.scrunch = state.scrunch;
       this.visible = state.visible;
       this.pendown = state.pendown;
-    }},
+    }},*/
 
     // Properties
 
@@ -503,6 +526,10 @@
     color: {
       get: function() { return this._color; },
       set: function(color) {
+        if(this.pathSteps){
+          this.canvas_ctx.stroke();
+          this.pathSteps = 0;
+        }
         this._color = color;
         this.canvas_ctx.strokeStyle = this._color;
         this.canvas_ctx.fillStyle = this._color;
@@ -519,6 +546,10 @@
 
     penwidth: {
       set: function(width) {
+        if(this.pathSteps){
+          this.canvas_ctx.stroke();
+          this.pathSteps = 0;
+        }
         this._penwidth = width;
         this.canvas_ctx.lineWidth = this._penwidth;
       },
