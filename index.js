@@ -17,10 +17,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-if (!('console' in window)) {
-  window.console = { log: function () { }, error: function () { } };
-}
-
 function $(s) { return document.querySelector(s); }
 function $$(s) { return document.querySelectorAll(s); }
 
@@ -173,8 +169,8 @@ function initInput() {
       window.procsrc = ""
       $("#myprocs ul").innerHTML = "";   
       let src = editor.getValue();   
-      for (let match of src.matchAll(/\s*to\s+(\S+)((?:\s+:\S+)*)(?:.(?!end))*.end\s*/smig)){
-        console.debug(match)
+      console.debug(codegen(pegparser.parse(src)));
+      for (let match of src.matchAll(/\s*to\s+(\S+)((?:\s+:\S+)*)(?:.(?!end))*.end\s*/smig)){        
         let proc = match[1];
         window.procsrc += "\n" + match[0] 
         
@@ -331,3 +327,45 @@ window.addEventListener('DOMContentLoaded', function () {
   initInput();
 
 });
+
+
+function codegen(parsetree){
+  let state = {
+    procs: {}
+  }
+
+  hoist(parsetree, state)
+  
+  let output = []
+  for(let n of parsetree){
+    output += gen[n.type](n, state)
+  }
+
+  console.debug(output)
+  let w = new Worker("parrotengine.js")
+  w.onmessage = (msg) => {
+    for(let op of msg.data){
+      parrotlogo[op.op](...op.params)
+    }
+  }
+  w.postMessage({code: output, canvas: $("#sandbox")})
+
+}
+const parrotlogo = {
+  fd: (v) => {turtle.move(v)},
+  bk: (v) => {turtle.move(-v)},
+  lt: (v) => {turtle.turn(-v)},
+  rt: (v) => {turtle.turn(v)},
+  home: (v) => {turtle.home(v)},
+  pd: () => { turtle.pendown = true },
+  pu: () => { turtle.pendown = false },
+  st: () => { turtle.visible = true },
+  ht: () => { turtle.visible = false },
+  clean: () => { turtle.clear() },
+  setpc: (color) => {
+    turtle.color = parseColor(color)
+  },
+  setpensize: (a) => {
+    turtle.penwidth = a
+  }
+}
