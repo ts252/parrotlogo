@@ -1,5 +1,5 @@
 to circle :size
-  repeat 90 [fd :size * 3.1415 / 90 rt 4]
+  rpt 90 [fd :size * 3.1415 / 90 rt 4]
 end  
 
 to parrot  

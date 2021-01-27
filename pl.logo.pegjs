@@ -60,7 +60,7 @@ else = "else" _ list:list { return list }
 
 list = "[" _ blocks:block* "]" { return blocks }
     
-proc = "to" _ fnname:label _ params:param* blocks:block* _ "end" _ { return { type: "fndecl", params: params, name: fnname, children: blocks }}
+proc = _ "to" _ fnname:label _ params:param* blocks:block* _ "end" _ { return { type: "fndecl", params: params, name: fnname, children: blocks }}
 
 stmt = _ bi:builtin _ {return bi}
 	/ _ fnc:fncall _ {return fnc}
@@ -74,6 +74,7 @@ unary = "fd"
     / "rt"
     / "lt"
     / "setpensize"
+	/ "wait"
     
 nullad = "pu"
  	/ "pd"

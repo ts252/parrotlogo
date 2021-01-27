@@ -38,6 +38,9 @@ const PALETTE = {
     },
     setpensize: (a) => {
       turtle.penwidth = a
+    },
+    wait: (a) => {
+
     }
   }
   
@@ -47,5 +50,6 @@ onmessage = function(e){
     eval(e.data.code)    
     postMessage(drawbuf)
     drawbuf = []
+    postMessage("done")
     close()
 }

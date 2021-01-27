@@ -60,6 +60,8 @@
     this.visible = true;
     this.pendown = true;
 
+    this.pathSteps = 0;
+
     this.was_oob = false;
     this.filling = 0;
 
@@ -176,6 +178,7 @@
       
       if(!this.pathSteps){
         this.canvas_ctx.beginPath();
+        this.canvas_ctx.moveTo(this.x, this.y)
         this.pathSteps = 0;
       }
 

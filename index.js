@@ -46,14 +46,14 @@ function initInput() {
     return v.replace(/(fd|bk)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
       if(steps > -1){
-        return `repeat ${steps} [${g1} ${g2/steps} wait 1]`
+        return `rpt ${steps} [${g1} ${g2/steps} wait 1]`
       } else {
         return substr
       }
     }).replace(/(lt|rt)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
       if(steps > -1){
-        return `repeat ${steps} [${g1} ${g2/steps} wait 1]`
+        return `rpt ${steps} [${g1} ${g2/steps} wait 1]`
       } else {
         return substr
       }
@@ -73,7 +73,7 @@ function initInput() {
 
     setTimeout(function () {
       document.body.classList.add('running');
-      logo.run(animate(v)).catch(function (e) {
+      parrotlogo.run(animate(v)).catch(function (e) {
         error.innerHTML = '';
         error.appendChild(document.createTextNode(e.message));
         error.classList.add('shown');
@@ -84,14 +84,14 @@ function initInput() {
   }
 
   function stop() {
-    logo.bye();
+    parrotlogo.bye();
     document.body.classList.remove('running');
   }
 
   input.run = run;
 
   function clear() {
-    logo.run("home clearscreen setpc 'black setpensize 1 st pd")
+    parrotlogo.run("home clean setpc 'black setpensize 1 st pd")
   }
   input.clear = clear;
 
@@ -169,7 +169,7 @@ function initInput() {
       window.procsrc = ""
       $("#myprocs ul").innerHTML = "";   
       let src = editor.getValue();   
-      console.debug(codegen(pegparser.parse(src)));
+      
       for (let match of src.matchAll(/\s*to\s+(\S+)((?:\s+:\S+)*)(?:.(?!end))*.end\s*/smig)){        
         let proc = match[1];
         window.procsrc += "\n" + match[0] 
@@ -177,7 +177,7 @@ function initInput() {
         let li = document.createElement("li")
         if(match[2].trim() == ""){
           li.innerHTML = `${proc} <div class="smbutton"><i class="fa fa-edit"></i></div> <div class="smbutton"><i class="fa fa-play"></i></div>`       
-          li.querySelector(".fa-play").onclick = () => { run(window.procsrc + " " + proc) };
+          li.querySelector(".fa-play").onclick = () => { run(window.procsrc + "\n" + proc) };
         } else {
           li.innerHTML = `${proc} <i class="param">${match[2].trim()}</i><div class="smbutton"><i class="fa fa-edit"></i></div></div>`                 
         }
@@ -244,9 +244,9 @@ function resize() {
   
  // $('#overlay').width = w; $('#overlay').height = h;
 
-  if (logo && turtle) {
+  if (turtle) {
     turtle.resize(w, h);
-}
+  }
 }
 
 window.addEventListener('resize', resize);
@@ -315,18 +315,13 @@ window.addEventListener('DOMContentLoaded', function () {
     canvas_ctx,
     turtle_ctx,
     canvas_element.width, canvas_element.height, $('#overlay'));
-
-  logo = new LogoInterpreter(
-    turtle, stream,
-    function (name, def) {      
-    });    
-  logo.run('cs');
-
-  
+   
 
   initInput();
 
 });
+
+const parrotlogo = (() => {
 
 function hoist(parsetree, state){
   for(let b of parsetree){
@@ -423,28 +418,57 @@ const gen = {
   }
 }
 
-function codegen(parsetree){
-  let state = {
+let w
+
+function codegen(src){
+  return new Promise((res, rej) => {
+    src += "\n\n"
+    console.debug(src)
+
+    try{
+      let parsetree = pegparser.parse(src)
+
+
+    let state = {
     procs: {}
   }
 
   hoist(parsetree, state)
-  
+
   let output = []
   for(let n of parsetree){
     output += gen.any(n, state)
   }
 
   console.debug(output)
-  let w = new Worker("parrotengine.js")
+
+  
+
+ 
+
+  if(w){
+    w.terminate()
+  }
+  w = new Worker("parrotengine.js")
   w.onmessage = (msg) => {
+    if(msg.data == "done"){
+      turtle.penwidth ++;
+      turtle.penwidth --;
+      res();
+      return
+    }
+
     for(let op of msg.data){
       parrotlogo[op.op](op.param)
     }
   }
   w.postMessage({code: output})
-
+} catch(e){
+  rej(e)
+  return
 }
+
+})}
 const PALETTE = {
   0: "black", 1: "blue", 2: "lime", 3: "cyan",
   4: "red", 5: "magenta", 6: "yellow", 7: "white",
@@ -475,5 +499,20 @@ const parrotlogo = {
   },
   setpensize: (a) => {
     turtle.penwidth = a
+  },
+  wait: (a) => {
+    
   }
 }
+
+return {
+  run: (src) => {
+    return codegen(src)
+  },
+  bye: () => {
+    if(w){
+      w.terminate()
+    }
+  }
+}
+})()
