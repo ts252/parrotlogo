@@ -34,23 +34,23 @@
 
 
 	<div id="canvas_container">
-		
-			<div id="display">
-				
-				<h1><img src="favicon.png" />parrot<i>logo</i></h1>
-					<canvas id="sandbox" >
-						
-					</canvas>
-					<canvas id="turtle" ></canvas>
-					<div id="overlay" style="font-size: 13px; font-family: monospace; color: black;"></div>
-					<div id="error"></div>
-				
-			</div>
-		
+
+		<div id="display">
+
+			<h1><img src="favicon.png" />parrot<i>logo</i></h1>
+			<canvas id="sandbox">
+
+			</canvas>
+			<canvas id="turtle"></canvas>
+			<div id="overlay" style="font-size: 13px; font-family: monospace; color: black;"></div>
+			<div id="error"></div>
+
+		</div>
+
 	</div>
 
 	<div class="container">
-		<div id="help">			
+		<div id="help">
 			<div id="hidehelp" title="show/hide help" class="fab subtle"><i class="fa fa-chevron-right"></i></div>
 			<h2>Useful logo words</h2>
 			<ul>
@@ -63,30 +63,31 @@
 					<abbr title="pen down">pd</abbr>,
 					<abbr title="set pen colour, like &quot;setpc 'blue&quot;">setpc</abbr>
 				</li>
-				<li><abbr title="bring the turtle back to the middle">home</abbr>, 
-					<abbr title="clear the screen">clean</abbr></li>
+				<li><abbr title="bring the turtle back to the middle">home</abbr>,
+					<abbr title="clear the screen">clean</abbr>
+				</li>
 				<li><abbr title="repeat everything inside [...] 5 times ">rpt 5 [ fd 10 rt 10 ]</abbr></li>
 				<li><abbr title="make a new procedure that you can call later">to PROCEDURE ... end</abbr></li>
 			</ul>
 			<h2>My procedures</h2>
 			<div id="myprocs">
-			<ul>
-			</ul>
-			<div class="smbutton" id="newproc"><i class="fa fa-plus"></i> new procedure</div>
+				<ul>
+				</ul>
+				<div class="smbutton" id="newproc"><i class="fa fa-plus"></i> new procedure</div>
 			</div>
 			<section id="options">
 				<h2>Options</h2><label><input type="checkbox" id="turbo">Turbo mode!</input></label>
 			</section>
 			<section class="about">
 				<h2>About</h2>
-				<p><b>parrot</b><i>logo</i> is made by Tom and Annie Sillence using: 
+				<p><b>parrot</b><i>logo</i> is made by Tom and Annie Sillence using:
 					<a href="https://github.com/inexorabletash/jslogo" target="_blank">jslogo</a>
 					<a href="https://codemirror.net/" target="_blank">codemirror</a>
 					<a href="https://fontawesome.com" target="_blank">fontawesome</a>
 					<a href="https://fonts.google.com/" target="_blank">google_fonts</a>
 					<a href="https://pegjs.org">peg</a>.
 					Say hello on <a href="https://github.com/ts252/parrotlogo">github</a>
-				</p>				
+				</p>
 				<p>This web page does not use cookies or collect any information about you.</p>
 			</section>
 
@@ -95,10 +96,9 @@
 		<div id="input-container">
 			<div id="input-panel" class="panel">
 				<div id="togglecode" title="show/hide help" class="fab subtle "><i class="fa fa-chevron-up"></i></div>
-				
+
 				<div id="run" class="fab">
-					<div class="label" title="Run All [ctrl-Enter]"><i
-							class="fa fa-play"></i></div>
+					<div class="label" title="Run All [ctrl-Enter]"><i class="fa fa-play"></i></div>
 				</div>
 				<div id="stop" class="fab">
 					<div class="label" title="Stop"><i class="fa fa-stop"></i></div>
@@ -108,19 +108,16 @@
 				</div>
 				<div id="input">
 					<div class="inner">
-
-
-						<textarea placeholder="Type your code here..."
-							id="logo-ta-multi-line"></textarea>
+						<textarea placeholder="Type your code here..." id="logo-ta-multi-line"></textarea>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>	
+	</div>
 
 	<script src="parser.js"></script>
-	
-	<script src="floodfill.js"></script>	
+
+	<script src="floodfill.js"></script>
 	<script src="turtle.js"></script>
 	<script src="index.js"></script>
 

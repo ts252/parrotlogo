@@ -38,22 +38,22 @@ function initInput() {
       })[e.keyCode];
   }
 
-  function animate(v){
-    if($("#turbo").checked){
+  function animate(v) {
+    if ($("#turbo").checked) {
       return v;
     }
 
     return v.replace(/(fd|bk)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
-      if(steps > -1){
-        return `rpt ${steps} [${g1} ${g2/steps} wait 1]`
+      if (steps > -1) {
+        return `rpt ${steps} [${g1} ${g2 / steps} wait 1]`
       } else {
         return substr
       }
     }).replace(/(lt|rt)\s+(\d+)/ig, (substr, g1, g2) => {
       let steps = Math.ceil(g2 / 10)
-      if(steps > -1){
-        return `rpt ${steps} [${g1} ${g2/steps} wait 1]`
+      if (steps > -1) {
+        return `rpt ${steps} [${g1} ${g2 / steps} wait 1]`
       } else {
         return substr
       }
@@ -112,7 +112,7 @@ function initInput() {
   editor.on('keydown', function (instance, event) {
     if (keyNameForEvent(event) === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      if(document.body.classList.contains("running")) {
+      if (document.body.classList.contains("running")) {
         stop();
       } else {
         run();
@@ -126,9 +126,9 @@ function initInput() {
     }
   })
 
-  function offsetFrom(el, parent){
+  function offsetFrom(el, parent) {
     rv = 0;
-    while(el.parentElement && el.parentElement != parent){
+    while (el.parentElement && el.parentElement != parent) {
       rv += el.offsetTop
       el = el.parentElement
     }
@@ -147,9 +147,9 @@ function initInput() {
     $("#input-panel").classList.toggle("expanded")
   }
 
-  function getLineAndChar(src, idx){
+  function getLineAndChar(src, idx) {
     let lines = src.substr(0, idx).split("\n")
-    return {line: lines.length - 1, ch: lines[lines.length - 1].length}
+    return { line: lines.length - 1, ch: lines[lines.length - 1].length }
   }
 
   $("#newproc").onclick = () => {
@@ -157,45 +157,45 @@ function initInput() {
     let src = editor.getValue()
     let landc = getLineAndChar(src, src.match(re).index)
     editor.setValue(src.replace(re, ("$1\n\nto MYNEWPROC \n\nend\n\n$2")))
-    editor.setSelection({line: landc.line + 10,ch: 0})
-    editor.setSelection({line: landc.line, ch: 0})    
-    
-    editor.setSelection({line: landc.line + 2, ch: 3}, {line: landc.line + 2,ch: 12})
+    editor.setSelection({ line: landc.line + 10, ch: 0 })
+    editor.setSelection({ line: landc.line, ch: 0 })
+
+    editor.setSelection({ line: landc.line + 2, ch: 3 }, { line: landc.line + 2, ch: 12 })
     editor.focus()
   }
 
   editor.on("change", () => {
     setTimeout(() => {
       window.procsrc = ""
-      $("#myprocs ul").innerHTML = "";   
-      let src = editor.getValue();   
-      
-      for (let match of src.matchAll(/\s*to\s+(\S+)((?:\s+:\S+)*)(?:.(?!end))*.end\s*/smig)){        
+      $("#myprocs ul").innerHTML = "";
+      let src = editor.getValue();
+
+      for (let match of src.matchAll(/\s*to\s+(\S+)((?:\s+:\S+)*)(?:.(?!end))*.end\s*/smig)) {
         let proc = match[1];
-        window.procsrc += "\n" + match[0] 
-        
+        window.procsrc += "\n" + match[0]
+
         let li = document.createElement("li")
-        if(match[2].trim() == ""){
-          li.innerHTML = `${proc} <div class="smbutton"><i class="fa fa-edit"></i></div> <div class="smbutton"><i class="fa fa-play"></i></div>`       
+        if (match[2].trim() == "") {
+          li.innerHTML = `${proc} <div class="smbutton"><i class="fa fa-edit"></i></div> <div class="smbutton"><i class="fa fa-play"></i></div>`
           li.querySelector(".fa-play").onclick = () => { run(window.procsrc + "\n" + proc) };
         } else {
-          li.innerHTML = `${proc} <i class="param">${match[2].trim()}</i><div class="smbutton"><i class="fa fa-edit"></i></div></div>`                 
+          li.innerHTML = `${proc} <i class="param">${match[2].trim()}</i><div class="smbutton"><i class="fa fa-edit"></i></div></div>`
         }
 
         let leadinglines = src.substring(0, match.index).split("\n")
         let lineno = leadinglines.length - 1
         let charno = leadinglines[leadinglines.length - 1].length
-        li.querySelector(".fa-edit").onclick = () => {          
-          
-          editor.setSelection({line: lineno+10,ch: charno})
-          editor.setSelection({line: lineno, ch: charno})
-          editor.setSelection({line: lineno+1, ch: charno})
+        li.querySelector(".fa-edit").onclick = () => {
+
+          editor.setSelection({ line: lineno + 10, ch: charno })
+          editor.setSelection({ line: lineno, ch: charno })
+          editor.setSelection({ line: lineno + 1, ch: charno })
           //editor.scrollIntoView({line: lineno,ch: charno}, 100)
           editor.focus()
         };
         $("#myprocs ul").appendChild(li)
       }
-        
+
 
       localStorage.setItem("parrotlogo.currentEditor", editor.getValue())
     }, 100);
@@ -223,10 +223,10 @@ function initInput() {
   $('#stop').addEventListener('click', () => { stop() });
   $('#clear').addEventListener('click', () => { clear() });
 
-  if(localStorage.getItem("parrotlogo.currentEditor") === null){
-    fetch("parrot.logo").then(d => d.text()).then(d => {editor.setValue(d)})
+  if (localStorage.getItem("parrotlogo.currentEditor") === null) {
+    fetch("parrot.logo").then(d => d.text()).then(d => { editor.setValue(d) })
     $("#turbo").checked = false
-    setTimeout(() => {run(procsrc + " welcome")}, 2000)
+    setTimeout(() => { run(procsrc + " welcome") }, 2000)
   } else {
     editor.setValue(localStorage.getItem("parrotlogo.currentEditor") || "")
     $("#turbo").checked = JSON.parse(localStorage.getItem("parrotlogo.turbo") || "false");
@@ -241,8 +241,8 @@ function initInput() {
 function resize() {
   var box = $('#display'), rect = box.getBoundingClientRect(),
     w = rect.width, h = rect.height;
-  
- // $('#overlay').width = w; $('#overlay').height = h;
+
+  // $('#overlay').width = w; $('#overlay').height = h;
 
   if (turtle) {
     turtle.resize(w, h);
@@ -315,7 +315,7 @@ window.addEventListener('DOMContentLoaded', function () {
     canvas_ctx,
     turtle_ctx,
     canvas_element.width, canvas_element.height, $('#overlay'));
-   
+
 
   initInput();
 
@@ -323,196 +323,197 @@ window.addEventListener('DOMContentLoaded', function () {
 
 const parrotlogo = (() => {
 
-function hoist(parsetree, state){
-  for(let b of parsetree){
-    if(b.type == "fndecl"){
-      state.procs[b.name] ={
-        name: b.name,
-        arity: b.params.length
+  function hoist(parsetree, state) {
+    for (let b of parsetree) {
+      if (b.type == "fndecl") {
+        state.procs[b.name] = {
+          name: b.name,
+          arity: b.params.length
+        }
+      }
+    }
+
+    function checkcall(n) {
+      if (n.type == "usercall") {
+        if (!(n.name in state.procs)) {
+          throw `Unknown procedure "${n.name}"`
+        }
+        if (state.procs[n.name].arity != n.params.length) {
+          throw `"${n.name}" takes ${state.procs[n.name].arity} parameters, but ${n.params.length} were supplied`
+        }
+      }
+    }
+
+    for (let n of parsetree) {
+      checkcall(n)
+    }
+  }
+
+  const gen = {
+    any: (node, state) => {
+      if (node.type) {
+        return gen[node.type](node, state)
+      } else {
+        //primitive
+        return JSON.stringify(node)
+      }
+    },
+
+    comment: (proc, state) => {
+      return ""
+    },
+
+    fndecl: (proc, state) => {
+      let rv = `procs["${proc.name}"] = (${proc.params.map(x => "__" + x).join(", ")}) => {`
+      for (let b of proc.children) {
+        rv += gen.any(b, state)
+      }
+      rv += "}\n";
+
+      return rv
+    },
+
+    param: (param, state) => {
+      return "__" + param.name
+    },
+
+    call: (call, state) => {
+      if ("param" in call) {
+        return `draw({op: "${call.fn}", param:${gen.any(call.param, state)}});\n`
+      } else {
+        return `draw({op: "${call.fn}"});\n`
+      }
+    },
+
+    usercall: (call, state) => {
+      return `procs["${call.name}"](${call.params.map(x => gen.any(x, state)).join(", ")});\n`
+    },
+
+    if: (ifexpr, state) => {
+      let rv = `if(${gen.any(ifexpr.expr)}){\n`
+      for (let b of ifexpr.ifchildren) {
+        rv += gen.any(b, state)
+      }
+      rv += "}"
+      if (ifexpr.elsechildren && ifexpr.elsechildren.length) {
+        rv += "else {"
+      }
+      for (let b of ifexpr.elsechildren) {
+        rv += gen.any(b, state)
+      }
+      rv += "}"
+      return rv
+    },
+
+    rpt: (rpt, state) => {
+      let rv = `for(let __loop = 0; __loop < (${gen.any(rpt.expr)}); __loop++){\n`
+      for (let b of rpt.children) {
+        rv += gen.any(b, state)
+      }
+      return rv + "}\n"
+    },
+
+    op: (op, state) => {
+      return ` (${gen.any(op.l, state)}) ${op.op} (${gen.any(op.r, state)}) `
+    }
+  }
+
+  let w
+
+  function codegen(src) {
+    return new Promise((res, rej) => {
+      src += "\n\n"
+      console.debug(src)
+
+      try {
+        let parsetree = pegparser.parse(src)
+
+
+        let state = {
+          procs: {}
+        }
+
+        hoist(parsetree, state)
+
+        let output = []
+        for (let n of parsetree) {
+          output += gen.any(n, state)
+        }
+
+        console.debug(output)
+
+
+
+
+
+        if (w) {
+          w.terminate()
+        }
+        w = new Worker("parrotengine.js")
+        w.onmessage = (msg) => {
+          if (msg.data == "done") {
+            turtle.penwidth++;
+            turtle.penwidth--;
+            res();
+            return
+          }
+
+          for (let op of msg.data) {
+            parrotlogo[op.op](op.param)
+          }
+        }
+        w.postMessage({ code: output })
+      } catch (e) {
+        rej(e)
+        return
+      }
+
+    })
+  }
+  const PALETTE = {
+    0: "black", 1: "blue", 2: "lime", 3: "cyan",
+    4: "red", 5: "magenta", 6: "yellow", 7: "white",
+    8: "brown", 9: "tan", 10: "green", 11: "aquamarine",
+    12: "salmon", 13: "purple", 14: "orange", 15: "gray"
+  };
+
+  function parseColor(color) {
+    if (color in PALETTE) {
+      return PALETTE[color]
+    }
+    return color;
+  }
+
+  const parrotlogo = {
+    fd: (v) => { turtle.move(v) },
+    bk: (v) => { turtle.move(-v) },
+    lt: (v) => { turtle.turn(-v) },
+    rt: (v) => { turtle.turn(v) },
+    home: (v) => { turtle.home(v) },
+    pd: () => { turtle.pendown = true },
+    pu: () => { turtle.pendown = false },
+    st: () => { turtle.visible = true },
+    ht: () => { turtle.visible = false },
+    clean: () => { turtle.clear() },
+    setpc: (color) => {
+      turtle.color = parseColor(color)
+    },
+    setpensize: (a) => {
+      turtle.penwidth = a
+    },
+    wait: (a) => {
+
+    }
+  }
+
+  return {
+    run: (src) => {
+      return codegen(src)
+    },
+    bye: () => {
+      if (w) {
+        w.terminate()
       }
     }
   }
-
-  function checkcall(n){
-    if(n.type == "usercall"){
-      if(!(n.name in state.procs)){
-        throw `Unknown procedure "${n.name}"`
-      }
-      if(state.procs[n.name].arity != n.params.length){
-        throw `"${n.name}" takes ${state.procs[n.name].arity} parameters, but ${n.params.length} were supplied`
-      }
-    }
-  }
-
-  for(let n of parsetree){
-    checkcall(n)
-  }
-}
-
-const gen = {
-  any: (node, state) => {
-    if(node.type){
-      return gen[node.type](node, state)
-    } else {
-      //primitive
-      return JSON.stringify(node)
-    }
-  },
-
-  comment: (proc, state) => {
-    return ""
-  },
-
-  fndecl: (proc, state) => {
-    let rv = `procs["${proc.name}"] = (${proc.params.map(x => "__" + x).join(", ")}) => {`
-    for(let b of proc.children){
-      rv += gen.any(b, state)      
-    }
-    rv += "}\n";
-
-    return rv
-  },
-
-  param: (param, state) => {
-    return "__" + param.name
-  },
-
-  call: (call, state) => {
-    if("param" in call){
-      return `draw({op: "${call.fn}", param:${gen.any(call.param, state)}});\n`      
-    } else {
-      return `draw({op: "${call.fn}"});\n`
-    }
-  },
-
-  usercall: (call, state) => {
-    return `procs["${call.name}"](${call.params.map(x => gen.any(x, state)).join(", ")});\n`
-  },
-
-  if: (ifexpr, state) => {
-    let rv = `if(${gen.any(ifexpr.expr)}){\n`
-    for(let b of ifexpr.ifchildren){
-      rv += gen.any(b, state)      
-    }
-    rv += "}"
-    if(ifexpr.elsechildren && ifexpr.elsechildren.length){
-      rv += "else {"
-    }
-    for(let b of ifexpr.elsechildren){
-      rv += gen.any(b, state)      
-    }
-    rv += "}"
-    return rv
-  },
-
-  rpt: (rpt, state) => {
-    let rv = `for(let __loop = 0; __loop < (${gen.any(rpt.expr)}); __loop++){\n`
-    for(let b of rpt.children){
-      rv += gen.any(b, state)      
-    }
-    return rv + "}\n"
-  },
-
-  op: (op, state) => {
-    return ` (${gen.any(op.l, state)}) ${op.op} (${gen.any(op.r, state)}) `
-  }
-}
-
-let w
-
-function codegen(src){
-  return new Promise((res, rej) => {
-    src += "\n\n"
-    console.debug(src)
-
-    try{
-      let parsetree = pegparser.parse(src)
-
-
-    let state = {
-    procs: {}
-  }
-
-  hoist(parsetree, state)
-
-  let output = []
-  for(let n of parsetree){
-    output += gen.any(n, state)
-  }
-
-  console.debug(output)
-
-  
-
- 
-
-  if(w){
-    w.terminate()
-  }
-  w = new Worker("parrotengine.js")
-  w.onmessage = (msg) => {
-    if(msg.data == "done"){
-      turtle.penwidth ++;
-      turtle.penwidth --;
-      res();
-      return
-    }
-
-    for(let op of msg.data){
-      parrotlogo[op.op](op.param)
-    }
-  }
-  w.postMessage({code: output})
-} catch(e){
-  rej(e)
-  return
-}
-
-})}
-const PALETTE = {
-  0: "black", 1: "blue", 2: "lime", 3: "cyan",
-  4: "red", 5: "magenta", 6: "yellow", 7: "white",
-  8: "brown", 9: "tan", 10: "green", 11: "aquamarine",
-  12: "salmon", 13: "purple", 14: "orange", 15: "gray"
-};
-
-function parseColor(color) {
-  if(color in PALETTE){
-    return PALETTE[color]
-  }
-  return color;
-}
-
-const parrotlogo = {
-  fd: (v) => {turtle.move(v)},
-  bk: (v) => {turtle.move(-v)},
-  lt: (v) => {turtle.turn(-v)},
-  rt: (v) => {turtle.turn(v)},
-  home: (v) => {turtle.home(v)},
-  pd: () => { turtle.pendown = true },
-  pu: () => { turtle.pendown = false },
-  st: () => { turtle.visible = true },
-  ht: () => { turtle.visible = false },
-  clean: () => { turtle.clear() },
-  setpc: (color) => {
-    turtle.color = parseColor(color)
-  },
-  setpensize: (a) => {
-    turtle.penwidth = a
-  },
-  wait: (a) => {
-    
-  }
-}
-
-return {
-  run: (src) => {
-    return codegen(src)
-  },
-  bye: () => {
-    if(w){
-      w.terminate()
-    }
-  }
-}
 })()
