@@ -1,56 +1,38 @@
-let drawbuf = []
-const PALETTE = {
-    0: "black", 1: "blue", 2: "lime", 3: "cyan",
-    4: "red", 5: "magenta", 6: "yellow", 7: "white",
-    8: "brown", 9: "tan", 10: "green", 11: "aquamarine",
-    12: "salmon", 13: "purple", 14: "orange", 15: "gray"
-};
+"use strict"
+importScripts("./turtle.js")
 
-function parseColor(color) {
-    if (color in PALETTE) {
-        return PALETTE[color]
+let sandboxCanvas = new OffscreenCanvas(320, 240);
+let turtleCanvas = new OffscreenCanvas(320, 240);
+let turtle = new this.CanvasTurtle(
+  sandboxCanvas.getContext("2d"),
+  turtleCanvas.getContext("2d"),
+  320, 240, null);    
+let fps = 60, minfps = 1;
+
+let lastFrame = 0
+
+turtle.onstroke = () => {
+  if(Date.now() > lastFrame + 1000/fps){
+    lastFrame = Date.now()
+    if(fps > minfps) {
+      fps /= 1.1
     }
-    return color;
+    let bmp = sandboxCanvas.transferToImageBitmap()
+    postMessage({target: "sandbox", bitmap: bmp}, [bmp])
+  }
 }
-
-function draw(op) {
-    drawbuf.push(op)
-    if (drawbuf.length > 10000) {
-        console.debug(`flushing ${drawbuf.length} draw ops`)
-        postMessage(drawbuf)
-        drawbuf = []
-    }
-}
-
-const parrotlogo = {
-    fd: (v) => { turtle.move(v) },
-    bk: (v) => { turtle.move(-v) },
-    lt: (v) => { turtle.turn(-v) },
-    rt: (v) => { turtle.turn(v) },
-    home: (v) => { turtle.home(v) },
-    pd: () => { turtle.pendown = true },
-    pu: () => { turtle.pendown = false },
-    st: () => { turtle.visible = true },
-    ht: () => { turtle.visible = false },
-    clean: () => { turtle.clear() },
-    setpc: (color) => {
-        turtle.color = parseColor(color)
-    },
-    setpensize: (a) => {
-        turtle.penwidth = a
-    },
-    wait: (a) => {
-
-    }
-}
-
 
 onmessage = function (e) {
-    let procs = {}
-    eval(e.data.code)
-    postMessage(drawbuf)
-    drawbuf = []
+    if(e.data.w){
+      sandboxCanvas.width = e.data.w
+      sandboxCanvas.height = e.data.h
+      turtle.resize(e.data.w, e.data.h)
+    }
+    fps = 60
+    Function(e.data.code)(turtle)
+    turtle.flush()    
+    let bmp = sandboxCanvas.transferToImageBitmap()
+    postMessage({target: "sandbox", bitmap: bmp}, [bmp])
     postMessage("done")
-    console.debug("done")
-    close()
+    console.debug("done")    
 }

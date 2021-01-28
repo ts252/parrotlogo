@@ -107,7 +107,9 @@
       }.bind(this));
     }},
 
-    _tick: {value: function() {
+    _tick: { value: () => {}},
+
+    _old_tick: {value: function() {
       function invert(p) { return [-p[0], p[1]]; }
 
       requestAnimationFrame(this._tick.bind(this));
@@ -163,7 +165,7 @@
           });
 
         ctx.closePath();
-        ctx.stroke();
+        ctx.stroke();        
 
         ctx.restore();
       }
@@ -173,6 +175,7 @@
 
       if(this.pathSteps == 10000){
         this.canvas_ctx.stroke();
+        this.onstroke();
         this.pathSteps = 0;
       }
       
@@ -334,8 +337,8 @@
       let oldw = this.width, oldh = this.height
       this.width = w;
       this.height = h;      
-      $('#sandbox').width = w; $('#sandbox').height = h;
-      $('#turtle').width = w; $('#turtle').height = h;
+      //$('#sandbox').width = w; $('#sandbox').height = h;
+      //$('#turtle').width = w; $('#turtle').height = h;
       this._init();
       this.canvas_ctx.putImageData(img, (w - oldw) / 2, (h - oldh) / 2);
     }},
@@ -382,6 +385,13 @@
     clearscreen: {value: function() {
       this.home();
       this.clear();
+    }},
+
+    flush: {value: function() {
+      if(this.pathSteps){
+        this.canvas_ctx.stroke()
+        this.pathSteps = 0
+      }
     }},
 
     clear: {value: function() {
@@ -531,6 +541,7 @@
       set: function(color) {
         if(this.pathSteps){
           this.canvas_ctx.stroke();
+          this.onstroke();
           this.pathSteps = 0;
         }
         this._color = color;
