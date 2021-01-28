@@ -5,11 +5,10 @@ let sandboxCanvas = new OffscreenCanvas(320, 240);
 let turtleCanvas = new OffscreenCanvas(320, 240);
 let turtle = new this.CanvasTurtle(
   sandboxCanvas.getContext("2d"),
-  turtleCanvas.getContext("2d"),
   320, 240, null);    
-let fps = 60, minfps = 1;
+let fps = 30, minfps = 1;
 
-let lastFrame = 0
+let lastFrame = 0, lastTurtle = 0
 
 turtle.onstroke = () => {
   if(Date.now() > lastFrame + 1000/fps){
@@ -19,6 +18,11 @@ turtle.onstroke = () => {
     }
     let bmp = sandboxCanvas.transferToImageBitmap()
     postMessage({target: "sandbox", bitmap: bmp}, [bmp])
+  }
+
+  if(Date.now() > lastTurtle + 1000/30){
+    lastTurtle = Date.now()    
+    postMessage({target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible})
   }
 }
 
@@ -33,6 +37,7 @@ onmessage = function (e) {
     turtle.flush()    
     let bmp = sandboxCanvas.transferToImageBitmap()
     postMessage({target: "sandbox", bitmap: bmp}, [bmp])
-    postMessage("done")
-    console.debug("done")    
+    postMessage({target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible})
+    postMessage("done")    
+    
 }
