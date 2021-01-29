@@ -59,7 +59,7 @@ function initInput() {
 
     
     document.body.classList.add('running');
-    parrotlogo.run(v).catch(function (e) {
+    parrotlogo.run(v, $("#turbo").checked).catch(function (e) {
       error.innerHTML = '';
       error.appendChild(document.createTextNode(e.message));
       error.classList.add('shown');
@@ -76,7 +76,7 @@ function initInput() {
   input.run = run;
 
   function clear() {
-    parrotlogo.run("home clean setpc 'black setpensize 1 st pd")
+    parrotlogo.run("home clean setpc 'black setpensize 1 st pd", true)
   }
   input.clear = clear;
 

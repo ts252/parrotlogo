@@ -86,6 +86,6 @@ onmessage = function (e) {
             engine = null
         }
     } else if (e.data.cmd == "run"){
-        engine.postMessage({ w: domwidth, h: domheight, code: e.data.code });   
+        engine.postMessage({ w: domwidth, h: domheight, code: e.data.code, turbo: e.data.turbo });   
     }
 }
