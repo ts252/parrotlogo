@@ -1,12 +1,17 @@
 "use strict"
+importScripts("./animturtle.js")
 
 let sandbox_ctx, turtle_ctx, engine;
 
 let domwidth, domheight
 
-let turtle = {
+let turtleSprite = {
     x: 0, y: 0, theta: 0, visible: true
 }
+
+const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+
+let turtle;
 
 function drawTurtle (clear){
     if(turtle_ctx){    
@@ -22,8 +27,8 @@ function drawTurtle (clear){
         if (turtle.visible) {
           
           turtle_ctx.save();
-          turtle_ctx.translate(turtle.x, -turtle.y);
-          turtle_ctx.rotate(Math.PI/2 - turtle.theta);
+          turtle_ctx.translate(turtleSprite.x, -turtleSprite.y);
+          turtle_ctx.rotate(Math.PI/2 - turtleSprite.theta);
           turtle_ctx.beginPath();          
   
           var points = [
@@ -58,6 +63,8 @@ onmessage = function (e) {
         turtle_ctx.strokeStyle = 'red';
         turtle_ctx.lineWidth = 2;
         turtle_ctx.setTransform(1, 0, 0, 1, domwidth / 2, domheight / 2);
+
+        turtle = new this.AnimTurtle(sandbox_ctx, domwidth, domheight);
         
     }
 
@@ -68,10 +75,10 @@ onmessage = function (e) {
                 sandbox_ctx.drawImage(msg.data.bitmap, 0, 0);
                 drawTurtle(true);
             } else if(msg.data.target == "turtle"){
-                turtle.x = msg.data.x
-                turtle.y = msg.data.y
-                turtle.theta = msg.data.theta
-                turtle.visible = msg.data.turtleVisible
+                turtleSprite.x = msg.data.x
+                turtleSprite.y = msg.data.y
+                turtleSprite.theta = msg.data.theta
+                turtleSprite.visible = msg.data.turtleVisible
                 drawTurtle();
             } else if(msg.data == "done"){   
                 drawTurtle(true);             
@@ -86,6 +93,15 @@ onmessage = function (e) {
             engine = null
         }
     } else if (e.data.cmd == "run"){
-        engine.postMessage({ w: domwidth, h: domheight, code: e.data.code, turbo: e.data.turbo });   
+        if(e.data.turbo){
+            sandbox_ctx.setTransform(1, 0, 0, 1, 0, 0);
+            engine.postMessage({ w: domwidth, h: domheight, code: e.data.code, turbo: e.data.turbo });   
+        } else {        
+            turtle._init()
+            let af = new AsyncFunction(e.data.code)
+            af().then(() => {    
+                postMessage("done")
+            })        
+        }
     }
 }

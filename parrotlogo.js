@@ -150,19 +150,19 @@ const parrotlogo = (() => {
         wait: (a) => ""
     }
     const turtleops_anim = {
-        fd: (v) => `await turtle.anim_move(${v}); `,
-        bk: (v) => `await turtle.anim_move(-(${v})); `,
-        lt: (v) => `await turtle.anim_turn(-(${v})); `,
-        rt: (v) => `await turtle.anim_turn(${v}); `,
-        home: (v) => "await turtle.anim_home(); ",
-        pd: () => "await turtle.anim_propset(\"pendown\", true); ",
-        pu: () => "await turtle.anim_propset(\"pendown\", false); ",
-        st: () => "await turtle.anim_propset(\"visible\", true); ",
-        ht: () => "await turtle.anim_propset(\"visible\", true); ",
-        clean: () => "await turtle.anim_clear(); ",
-        setpc: (color) => `await turtle.anim_propset(\"color\", ${parseColor(color)});`,
-        setpensize: (a) => `await turtle.anim_propset(\"penwidth\" = (${a})); `,
-        wait: (a) => ""
+        fd: (v) => `await turtle.move(${v}); `,
+        bk: (v) => `await turtle.move(-(${v})); `,
+        lt: (v) => `await turtle.turn(-(${v})); `,
+        rt: (v) => `await turtle.turn(${v}); `,
+        home: (v) => "await turtle.home(); ",
+        pd: () => "await turtle.pendown(); ",
+        pu: () => "await turtle.penup() ",
+        st: () => "await turtle.show() ",
+        ht: () => "await turtle.hide() ",
+        clean: () => "await turtle.clear(); ",
+        setpc: (color) => `await turtle.color(${parseColor(color)});`,
+        setpensize: (a) => `await turtle.penwidth(${a}); `,
+        wait: (a) => `await turtle.wait(${a}); `
     }
 
     let worker

@@ -32,23 +32,13 @@ onmessage = function (e) {
         sandboxCanvas.height = e.data.h
         turtle.resize(e.data.w, e.data.h)
     }
+    
+    fps = 60
+    Function(e.data.code)()
+    turtle.flush()
+    let bmp = sandboxCanvas.transferToImageBitmap()
+    postMessage({ target: "sandbox", bitmap: bmp }, [bmp])
+    postMessage({ target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible })
+    postMessage("done")
 
-    if (e.data.turbo) {
-        fps = 60
-        Function(e.data.code)()
-        turtle.flush()
-        let bmp = sandboxCanvas.transferToImageBitmap()
-        postMessage({ target: "sandbox", bitmap: bmp }, [bmp])
-        postMessage({ target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible })
-        postMessage("done")
-    } else {
-        let AsyncFunction = Object.getPrototypeOf(async function () { }).constructor
-        AsyncFunction(e.data.code)().then(() => {
-
-            let bmp = sandboxCanvas.transferToImageBitmap()
-            postMessage({ target: "sandbox", bitmap: bmp }, [bmp])
-            postMessage({ target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible })
-            postMessage("done")
-        })
-    }
 }
