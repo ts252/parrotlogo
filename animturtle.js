@@ -22,12 +22,6 @@
     function deg2rad(d) { return d / 180 * Math.PI; }
     function rad2deg(r) { return r * 180 / Math.PI; }
 
-    async function frame(){
-        await new Promise((res, rej) => {
-            requestAnimationFrame(res)
-        })
-    }
-
     function AnimTurtle(canvas_ctx, w, h) {
         this.canvas_ctx = canvas_ctx;
         this.width = Number(w);
@@ -54,6 +48,29 @@
 
     Object.defineProperties(AnimTurtle.prototype, {
 
+        frame: {value: async function(distance){
+            let t = this
+            if(this.pxArrears + distance < this.pxPerSec / this.fps){
+                this.pxArrears += distance
+                return Promise.resolve()
+            } else {
+                this.pxArrears += distance - this.pxPerSec / this.fps
+            
+                await new Promise((res, rej) => {
+                    requestAnimationFrame(() => {
+                        this.fps = ++this.frames * 1000.0 / (Date.now() - this.started)
+                        try{
+                            t.onFrame()
+                            res()
+                        } catch(e){
+                            rej(e)
+                        }
+                    })
+                })
+            }
+        }},
+    
+
         // Internal methods
 
         _init: {
@@ -63,24 +80,50 @@
                 this.penmode(this._penmode);
                 this.penwidth(this.penwidth);
 
+                this.pxArrears = 0;
+                this.pxPerSec = 200;
+
                 this.canvas_ctx.setTransform(this.sx, 0, 0, -this.sy, this.width / 2, this.height / 2);
+
+                this.started = Date.now()
+                this.fps = 60
+                this.frames = 0
+                this.animPxPerDeg = 0.3
             }
         },
 
         _moveto: {
-            value: async function (x, y) {
+            value: async function (x, y) {                
+                let distance = Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2))
+                let steps = Math.max(1, Math.round((distance + this.pxArrears) / (this.pxPerSec / this.fps)))
 
-                this.canvas_ctx.beginPath();
-                this.canvas_ctx.moveTo(this.x, this.y)
-                if (this._down) {
-                    this.canvas_ctx.lineTo(x, y)
-                } else {
-                    this.canvas_ctx.moveTo(x, y)
+                const step = async (stepx, stepy, stepdistance) => {                    
+                    if (this._down) {
+                        this.canvas_ctx.beginPath();                
+                        this.canvas_ctx.moveTo(this.x, this.y)
+                        this.canvas_ctx.lineTo(stepx, stepy)
+                        this.canvas_ctx.stroke()                
+                    }
+                    
+                    this.x = stepx;
+                    this.y = stepy;
+
+                    await this.frame(stepdistance)
                 }
-                this.canvas_ctx.stroke()
-                this.x = this.px = x;
-                this.y = this.py = y;
-                await frame()
+
+                const startx = this.x,
+                    starty = this.y
+                
+                for(let i = 0; i < steps; i++){
+                    let distsofar = distance * (i + 1) / steps;
+                    await step(startx + distsofar * Math.cos(this.r),
+                        starty + distsofar * Math.sin(this.r),
+                        distance / steps);
+                }
+
+                //prevent rounding errors
+                this.x = x
+                this.y = y
 
             }
         },
@@ -116,24 +159,30 @@
                 await this._moveto(x, y, distance);
 
                 if (point) {
-                    this.x = this.px = saved_x;
-                    this.y = this.px = saved_y;
+                    this.x = saved_x;
+                    this.y = saved_y;
                 }
+
+                this.onFrame()
             }
         },
 
         turn: {
             value: async function (angle) {
-                this.r -= deg2rad(angle);
+                let distanceEquiv = angle * this.animPxPerDeg
+                let steps = Math.max(1, Math.round((distanceEquiv + this.pxArrears) / (this.pxPerSec / this.fps)))
+                let finalAngle = this.r - deg2rad(angle)
+                for(let i = 0; i < steps; i++){
+                    this.r -= deg2rad(angle/steps);
+                    await this.frame(distanceEquiv / steps)
+                }
+                this.r = finalAngle;
             }
         },
 
         towards: {
-            value: function (x, y) {
-                x = x;
-                y = y;
-
-                return 90 - rad2deg(Math.atan2(y - this.y, x - this.x));
+            value: function (x, y) {                
+                return 90 - rad2deg(Math.atan2(x - this.x, y - this.y));
             }
         },
 
@@ -160,6 +209,7 @@
 
         home: {
             value: async function () {
+                this.r = deg2rad(this.towards(0, 0));
                 await this._moveto(0, 0);
                 this.r = deg2rad(90);
             }
@@ -206,8 +256,8 @@
         scrunch: {
             set: function (sc) {
                 var sx = sc[0], sy = sc[1];
-                this.x = this.px = this.x / sx * this.sx;
-                this.y = this.py = this.y / sy * this.sy;
+                this.x = this.x / sx * this.sx;
+                this.y = this.y / sy * this.sy;
 
                 this.sx = sx;
                 this.sy = sy;

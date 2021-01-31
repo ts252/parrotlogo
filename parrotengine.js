@@ -22,7 +22,7 @@ turtle.onstroke = () => {
 
     if (Date.now() > lastTurtle + 1000 / 30) {
         lastTurtle = Date.now()
-        postMessage({ target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible })
+        postMessage({ target: "turtle", x: turtle.x, y: turtle.y, r: turtle.r, visible: turtle.visible })
     }
 }
 
@@ -38,7 +38,7 @@ onmessage = function (e) {
     turtle.flush()
     let bmp = sandboxCanvas.transferToImageBitmap()
     postMessage({ target: "sandbox", bitmap: bmp }, [bmp])
-    postMessage({ target: "turtle", x: turtle.x, y: turtle.y, theta: turtle.r, turtleVisible: turtle.visible })
+    postMessage({ target: "turtle", x: turtle.x, y: turtle.y, r: turtle.r, visible: turtle.visible })
     postMessage("done")
 
 }

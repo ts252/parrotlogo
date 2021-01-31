@@ -136,10 +136,7 @@
 
         towards: {
             value: function (x, y) {
-                x = x;
-                y = y;
-
-                return 90 - rad2deg(Math.atan2(y - this.y, x - this.x));
+                return 90 - rad2deg(Math.atan2(x - this.x, y - this.y));
             }
         },
 

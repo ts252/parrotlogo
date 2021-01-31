@@ -6,12 +6,14 @@ let sandbox_ctx, turtle_ctx, engine;
 let domwidth, domheight
 
 let turtleSprite = {
-    x: 0, y: 0, theta: 0, visible: true
+    x: 0, y: 0, r: Math.PI / 2, visible: true
 }
 
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
 let turtle;
+
+let runningTurbo, interrupted = false;
 
 function drawTurtle (clear){
     if(turtle_ctx){    
@@ -28,7 +30,7 @@ function drawTurtle (clear){
           
           turtle_ctx.save();
           turtle_ctx.translate(turtleSprite.x, -turtleSprite.y);
-          turtle_ctx.rotate(Math.PI/2 - turtleSprite.theta);
+          turtle_ctx.rotate(Math.PI/2 - turtleSprite.r);
           turtle_ctx.beginPath();          
   
           var points = [
@@ -65,6 +67,16 @@ onmessage = function (e) {
         turtle_ctx.setTransform(1, 0, 0, 1, domwidth / 2, domheight / 2);
 
         turtle = new this.AnimTurtle(sandbox_ctx, domwidth, domheight);
+        turtle.onFrame = () => {
+            for(let prop in turtleSprite){
+                turtleSprite[prop] = turtle[prop]
+            }
+            drawTurtle(true)
+            if(interrupted){
+                interrupted = false;
+                throw {message: "interrupted"}
+            }
+        }
         
     }
 
@@ -75,10 +87,9 @@ onmessage = function (e) {
                 sandbox_ctx.drawImage(msg.data.bitmap, 0, 0);
                 drawTurtle(true);
             } else if(msg.data.target == "turtle"){
-                turtleSprite.x = msg.data.x
-                turtleSprite.y = msg.data.y
-                turtleSprite.theta = msg.data.theta
-                turtleSprite.visible = msg.data.turtleVisible
+                for(let prop in turtleSprite){
+                    turtleSprite[prop] = msg.data[prop]
+                }
                 drawTurtle();
             } else if(msg.data == "done"){   
                 drawTurtle(true);             
@@ -88,9 +99,11 @@ onmessage = function (e) {
     }    
 
     if (e.data.cmd == "terminate") {
-        if (engine) {
+        if (runningTurbo && engine) {
             engine.terminate()
             engine = null
+        } else {
+            interrupted = true;
         }
     } else if (e.data.cmd == "run"){
         if(e.data.turbo){
@@ -98,8 +111,13 @@ onmessage = function (e) {
             engine.postMessage({ w: domwidth, h: domheight, code: e.data.code, turbo: e.data.turbo });   
         } else {        
             turtle._init()
+            for(let prop in turtleSprite){
+                turtle[prop] = turtleSprite[prop]
+            }
             let af = new AsyncFunction(e.data.code)
             af().then(() => {    
+                turtle.onFrame()
+                interrupted = false
                 postMessage("done")
             })        
         }
