@@ -15,6 +15,17 @@ let turtle;
 
 let runningTurbo, interrupted = false;
 
+async function sleep(delay){
+    await new Promise((res, rej) => {
+        setTimeout(res, delay);
+    })
+}
+
+async function hilightloc(loc){
+    postMessage({type: "loc", loc: loc});
+    //await sleep(20)
+}
+
 function drawTurtle (clear){
     if(turtle_ctx){    
         function invert(p) { return [-p[0], p[1]]; }  

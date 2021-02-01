@@ -50,7 +50,11 @@ const parrotlogo = (() => {
     const gen = {
         any: (node, state) => {
             if (node.type) {
-                return gen[node.type](node, state)
+                let loc = "";
+                if(node.location && !mode.turbo){
+                    loc = "await hilightloc("+JSON.stringify(node.location)+"); \n"
+                }
+                return loc + gen[node.type](node, state)
             } else {
                 //primitive
                 return JSON.stringify(node)
@@ -223,8 +227,14 @@ const parrotlogo = (() => {
                         return
                     }
 
-                    for (let op of msg.data) {
-                        parrotlogo[op.op](op.param)
+                    if(msg.data.type == "loc"){
+                        let l = msg.data.loc
+                        console.debug(l)
+                        if(l.end.column == 0){
+                            l.end.line--
+                            l.end.column = 999
+                        }
+                        editor.setSelection({line: l.start.line-1, ch: l.start.column-1}, {line: l.end.line-1, ch: l.end.column-1})
                     }
                 }
             } catch (e) {

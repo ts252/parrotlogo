@@ -45,8 +45,8 @@ prog = blocks:tlblock+ _ {return blocks}
 tlblock = proc 
 	/ block
 
-block = ctrl:ctrl _ {return ctrl}
-	/stmt:stmt {return stmt}
+block = ctrl:ctrl _ {ctrl.location = location(); return ctrl}
+	/stmt:stmt {stmt.location = location(); return stmt}
 	/comment
     
 ctrl = if
