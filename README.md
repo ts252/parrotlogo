@@ -1,3 +1,3 @@
 # parrotlogo
 
-In action: https://ts252.github.com/parrotlogo
+In action: https://ts252.github.io/parrotlogo
